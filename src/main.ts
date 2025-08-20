@@ -1,4 +1,4 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { config as configEnv } from 'dotenv';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -8,14 +8,16 @@ import {
   ResponseDto,
   ResponseInterceptor,
   LoggingInterceptor,
+  BadRequestFilter,
 } from '@/common';
 import { config, swaggerConfig } from '@/configs';
 import { Logger } from './utils';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 configEnv();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: Logger.logger as import('@nestjs/common').LoggerService,
+    logger: Logger.logger,
     cors: true,
   });
 
@@ -28,9 +30,26 @@ async function bootstrap() {
   // Global interceptors
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      validationError: {
+        target: false,
+        value: false,
+      },
+    }),
+  );
 
-  // Global filters
+  const reflector = app.get(Reflector);
+  app.useGlobalFilters(new BadRequestFilter());
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalInterceptors(
+    new ClassSerializerInterceptor(reflector, {
+      excludePrefixes: ['_'],
+    }),
+  );
 
   const swaggerDocument = new DocumentBuilder()
     .setTitle(swaggerConfig.title)
@@ -42,16 +61,6 @@ async function bootstrap() {
       swaggerConfig.contact.url,
       swaggerConfig.contact.email,
     )
-    .addGlobalParameters({
-      in: 'header',
-      name: 'x-lang',
-      required: false,
-      description: 'Language kin,en,fr,.....',
-      schema: {
-        type: 'string',
-        default: 'kin',
-      },
-    })
     .addBearerAuth({
       type: 'http',
       scheme: 'bearer',

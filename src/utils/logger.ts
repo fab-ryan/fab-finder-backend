@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-base-to-string */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { format, transports } from 'winston';
 import 'winston-daily-rotate-file';
@@ -37,7 +38,8 @@ export class Logger {
             all: true,
           }),
           format.printf(
-            (info) => `${info.timestamp} ${info.level}: ${info.message}`,
+            (info: { timestamp: string; level: string; message: string }) =>
+              `${info.timestamp} ${info.level}: ${info.message}`,
           ),
         ),
       }),
