@@ -22,9 +22,7 @@ export class LoggingInterceptor implements NestInterceptor {
     const params = request?.params as Record<string, unknown>;
     const query = request?.query as Record<string, unknown>;
     const headers = request?.headers as Record<string, unknown>;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const requestId = (headers['x-request-id'] as string) || uuidv4();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     (request as any).requestId = requestId;
 
     // Set request start time
