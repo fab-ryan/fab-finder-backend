@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-base-to-string */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { format, transports } from 'winston';
 import 'winston-daily-rotate-file';
 import { WinstonModule } from 'nest-winston';
