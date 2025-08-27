@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # Monitor Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Monitor your NestJS application
+  - job_name: 'fab-finder-api'
+    static_configs:
+      - targets: ['localhost:5500'] # Your app port
+    metrics_path: '/api/metrics'
+    scrape_interval: 30s

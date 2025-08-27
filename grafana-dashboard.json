@@ -1,0 +1,100 @@
+{
+    "dashboard": {
+        "id": null,
+        "title": "Fab Finder API Metrics",
+        "tags": ["nestjs", "fab-finder"],
+        "timezone": "browser",
+        "panels": [{
+                "id": 1,
+                "title": "HTTP Requests per Second",
+                "type": "stat",
+                "targets": [{
+                    "expr": "rate(http_requests_total[5m])",
+                    "format": "time_series",
+                    "legendFormat": "{{method}} {{route}}"
+                }],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 0
+                }
+            },
+            {
+                "id": 2,
+                "title": "HTTP Request Duration",
+                "type": "graph",
+                "targets": [{
+                        "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+                        "format": "time_series",
+                        "legendFormat": "95th percentile"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))",
+                        "format": "time_series",
+                        "legendFormat": "50th percentile"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 0
+                }
+            },
+            {
+                "id": 3,
+                "title": "Course Enrollments",
+                "type": "stat",
+                "targets": [{
+                    "expr": "increase(course_enrollments_total[1h])",
+                    "format": "time_series",
+                    "legendFormat": "Course {{course_id}}"
+                }],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 8
+                }
+            },
+            {
+                "id": 4,
+                "title": "Quiz Completions",
+                "type": "piechart",
+                "targets": [{
+                    "expr": "sum by (status) (increase(quiz_completions_total[24h]))",
+                    "format": "time_series",
+                    "legendFormat": "{{status}}"
+                }],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 8
+                }
+            },
+            {
+                "id": 5,
+                "title": "Active Users",
+                "type": "stat",
+                "targets": [{
+                    "expr": "active_users_total",
+                    "format": "time_series",
+                    "legendFormat": "Active Users"
+                }],
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 16
+                }
+            }
+        ],
+        "time": {
+            "from": "now-6h",
+            "to": "now"
+        },
+        "refresh": "5s"
+    }
+}
