@@ -1,5 +1,19 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
+
+// Define our User interface that extends Passport's User type
+declare global {
+  namespace Express {
+    // Extend the User interface instead of modifying Request
+    interface User {
+      id?: string;
+      roles?: string[];
+      permissions?: string[];
+      [key: string]: any;
+    }
+  }
+}
 
 /**
  * Decorator to inject the current user from the request

@@ -38,12 +38,15 @@
     "users:list": "yarn users list",
     "postinstall": "node scripts/postinstall.js",
     "start:prometheus": " ./scripts/start-prometheus.sh",
-    "stop:prometheus": "./scripts/stop-prometheus.sh"
+    "stop:prometheus": "./scripts/stop-prometheus.sh",
+    "documentation": "npx @compodoc/compodoc -p tsconfig.json -s -d documentation --theme readthedocs"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.0",
     "@nestjs/typeorm": "^11.0.0",
@@ -51,6 +54,9 @@
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-jwt": "^4.0.1",
     "pg": "^8.16.3",
     "postgres": "^3.4.7",
     "prom-client": "^15.1.3",
@@ -61,6 +67,7 @@
     "winston-dashboard": "^1.0.12"
   },
   "devDependencies": {
+    "@compodoc/compodoc": "^1.1.26",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
     "@nestjs/cli": "^11.0.0",
@@ -71,6 +78,8 @@
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.20",
     "@types/node": "^22.10.7",
+    "@types/passport-google-oauth20": "^2.0.16",
+    "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^6.0.2",
     "dotenv": "^17.2.1",
     "eslint": "^9.18.0",

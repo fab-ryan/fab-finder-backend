@@ -13,6 +13,7 @@ import {
 import { config, swaggerConfig } from '@/configs';
 import { Logger } from './utils';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { JwtAuthGuard } from '@/guards';
 configEnv();
 
 async function bootstrap() {
@@ -45,6 +46,7 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
   app.useGlobalFilters(new BadRequestFilter());
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalGuards(new JwtAuthGuard(reflector));
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(reflector, {
       excludePrefixes: ['_'],

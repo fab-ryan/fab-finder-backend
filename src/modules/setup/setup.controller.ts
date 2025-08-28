@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SetupService } from './setup.service';
+import { Public } from '@/decorators/public.decorator';
 
 interface EnvironmentVariableDto {
   key: string;
@@ -21,6 +22,7 @@ interface EnvironmentVariableDto {
 export class SetupController {
   constructor(private readonly setupService: SetupService) {}
 
+  @Public()
   @Post('initialize')
   @ApiOperation({ summary: 'Perform initial setup' })
   @ApiResponse({
@@ -42,6 +44,7 @@ export class SetupController {
     };
   }
 
+  @Public()
   @Get('status')
   @ApiOperation({ summary: 'Get setup status and environment info' })
   @ApiResponse({
