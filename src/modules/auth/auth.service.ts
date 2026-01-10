@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Injectable,
   BadRequestException,
@@ -9,6 +10,7 @@ import { User } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { AuthProvider } from '@/enums';
 interface TokenPayload {
   sub: string;
   iat: number;
@@ -90,7 +92,6 @@ export class AuthService {
     }
   }
 
-  // Placeholder methods for other endpoints
   loginWithGoogle() {
     return {
       code: 200,
@@ -98,8 +99,47 @@ export class AuthService {
     };
   }
 
-  googleLogin(req: any) {
-    throw new BadRequestException('Google login not implemented yet');
+  async googleLogin(req: any) {
+    try {
+      if (!req.user) {
+        throw new BadRequestException('No user from Google');
+      }
+
+      const { email, firstName, lastName, picture } = req.user;
+
+      // Check if user exists
+      let user = await this.userRepository.findOne({ where: { email } });
+
+      if (!user) {
+        user = this.userRepository.create({
+          email,
+          isActive: true,
+          provider: AuthProvider.GOOGLE,
+          username: email.split('@')[0], // Create username from email
+        });
+
+        await this.userRepository.save(user);
+      }
+
+      // Generate JWT token
+      const payload = { sub: user.id };
+      const accessToken = this.jwtService.sign(payload);
+      const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+
+      return {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+        },
+      };
+    } catch (error) {
+      throw new BadRequestException(
+        'Google authentication failed: ' + error.message,
+      );
+    }
   }
 
   forgotPassword(passwordDto: any) {
