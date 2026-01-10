@@ -6,8 +6,10 @@ import {
   UpdateDateColumn,
   OneToMany,
   Index,
+  DeleteDateColumn,
 } from 'typeorm';
 import { UserRole } from '@/modules/rbac/entities/user-role.entity';
+import { AuthProvider } from '@/enums';
 
 export enum UserStatus {
   ACTIVE = 'active',
@@ -54,11 +56,20 @@ export class User {
   @Column({ nullable: true })
   bannedBy: string;
 
+  @Column({ default: AuthProvider.LOCAL, type: 'enum', enum: AuthProvider })
+  provider: AuthProvider;
+
+  @Column({ nullable: true })
+  profilePicture: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt: Date;
 
   @OneToMany(() => UserRole, (userRole) => userRole.user, {
     cascade: true,

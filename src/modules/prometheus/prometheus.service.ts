@@ -12,7 +12,7 @@ export class PrometheusService {
 
   constructor() {
     this.register = new client.Registry();
-    this.register.setDefaultLabels({ app: 'e-learning-api' });
+    this.register.setDefaultLabels({ app: 'fab-finder-api' });
     client.collectDefaultMetrics({ register: this.register });
 
     // HTTP requests counter
