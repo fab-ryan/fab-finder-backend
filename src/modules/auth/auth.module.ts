@@ -7,6 +7,7 @@ import { config } from '@/configs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { GoogleStrategy } from '@/common/strategy/google.strategy';
+import { Session } from '../users/entities/session.entity';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { GoogleStrategy } from '@/common/strategy/google.strategy';
       signOptions: { expiresIn: '1d' },
       global: true,
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Session]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, GoogleStrategy],

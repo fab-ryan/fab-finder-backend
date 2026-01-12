@@ -8,18 +8,22 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { RbacService } from '../services/rbac.service';
 import { CreatePermissionDto, UpdatePermissionDto } from '../dto';
-import { RbacGuard } from '../../../guards/rbac.guard';
-import {
-  AdminOnly,
-  RequirePermissions,
-} from '../../../decorators/rbac.decorator';
+import { PermissionGuard } from '../../../guards/permission.guard';
+import { AdminOnly } from '../../../decorators/roles.decorator';
+import { DynamicRead } from '../../../decorators/permission.decorator';
 
 @ApiTags('Permissions')
 @Controller('permissions')
-@UseGuards(RbacGuard)
+@ApiBearerAuth()
+@UseGuards(PermissionGuard)
 export class PermissionController {
   constructor(private readonly rbacService: RbacService) {}
 
@@ -42,7 +46,7 @@ export class PermissionController {
   }
 
   @Get()
-  @RequirePermissions('permissions:read')
+  @DynamicRead('permissions', ['admin'])
   @ApiOperation({ summary: 'Get all permissions' })
   @ApiResponse({
     status: 200,
@@ -58,7 +62,7 @@ export class PermissionController {
   }
 
   @Get(':id')
-  @RequirePermissions('permissions:read')
+  @DynamicRead('permissions', ['admin'])
   @ApiOperation({ summary: 'Get permission by ID' })
   @ApiResponse({
     status: 200,

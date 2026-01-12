@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Role } from './role.entity';
 import { User } from '../../users/entities/user.entity';
@@ -21,13 +22,6 @@ export class UserRole {
   @Column('uuid')
   roleId: string;
 
-  @ManyToOne(() => User, (user) => user.userRoles)
-  @JoinColumn({ name: 'userId' })
-  user: User;
-
-  @ManyToOne(() => Role, { eager: true })
-  @JoinColumn({ name: 'roleId' })
-  role: Role;
 
   @Column({ default: true })
   isActive: boolean;
@@ -37,4 +31,14 @@ export class UserRole {
 
   @UpdateDateColumn()
   updatedAt: Date;
+  
+  @ManyToOne(() => User, (user) => user.userRoles)
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
+  @ManyToOne(() => Role, { eager: true })
+  @JoinColumn({ name: 'roleId' })
+  role: Role;
+
+
 }

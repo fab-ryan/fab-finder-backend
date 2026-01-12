@@ -11,12 +11,13 @@ import {
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RbacService } from '../services/rbac.service';
 import { CreateRoleDto, UpdateRoleDto, AssignRoleDto } from '../dto';
-import { RbacGuard } from '@/guards/rbac.guard';
-import { AdminOnly, RequirePermissions } from '@/decorators/rbac.decorator';
+import { PermissionGuard } from '@/guards/permission.guard';
+import { AdminOnly } from '@/decorators/roles.decorator';
+import { DynamicRead } from '@/decorators/permission.decorator';
 
 @ApiTags('Roles')
 @Controller('roles')
-@UseGuards(RbacGuard)
+@UseGuards(PermissionGuard)
 export class RoleController {
   constructor(private readonly rbacService: RbacService) {}
 
@@ -34,7 +35,7 @@ export class RoleController {
   }
 
   @Get()
-  @RequirePermissions('roles:read')
+  @DynamicRead('roles', ['admin'])
   @ApiOperation({ summary: 'Get all roles' })
   @ApiResponse({ status: 200, description: 'Roles retrieved successfully' })
   async getAllRoles() {
@@ -47,7 +48,7 @@ export class RoleController {
   }
 
   @Get(':id')
-  @RequirePermissions('roles:read')
+  @DynamicRead('roles', ['admin'])
   @ApiOperation({ summary: 'Get role by ID' })
   @ApiResponse({ status: 200, description: 'Role retrieved successfully' })
   async getRoleById(@Param('id') id: string) {
