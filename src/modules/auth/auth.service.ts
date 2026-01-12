@@ -10,7 +10,8 @@ import { User } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { AuthProvider } from '@/enums';
+import { Session } from '../users/entities/session.entity';
+import { Request } from 'express';
 interface TokenPayload {
   sub: string;
   iat: number;
@@ -23,9 +24,11 @@ export class AuthService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    @InjectRepository(Session)
+    private readonly sessionRepository: Repository<Session>,
   ) {}
 
-  async create(createAuthDto: CreateAuthDto) {
+  async create(createAuthDto: CreateAuthDto, req:Request) {
     try {
       const { username, password } = createAuthDto;
 
@@ -53,6 +56,13 @@ export class AuthService {
       const payload = { sub: user.id };
       const accessToken = this.jwtService.sign(payload);
       const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+      await this.saveUserSession(
+        user.id,
+        refreshToken,
+        req.headers['user-agent'],
+        req.ip,
+        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      );
 
       return {
         access_token: accessToken,
@@ -82,7 +92,7 @@ export class AuthService {
         { sub: user.id },
         { expiresIn: '7d' },
       );
-
+     
       return {
         access_token: newAccessToken,
         refresh_token: newRefreshToken,
@@ -114,8 +124,12 @@ export class AuthService {
         user = this.userRepository.create({
           email,
           isActive: true,
-          provider: AuthProvider.GOOGLE,
           username: email.split('@')[0], // Create username from email
+          password: '', // No password for OAuth users
+          lastName,
+          firstName,
+          profilePicture: picture,
+          isVerified: true,
         });
 
         await this.userRepository.save(user);
@@ -125,7 +139,13 @@ export class AuthService {
       const payload = { sub: user.id };
       const accessToken = this.jwtService.sign(payload);
       const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-
+      await this.saveUserSession(
+        user.id,
+        refreshToken,
+        req.headers['user-agent'],
+        req.ip,
+        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      );
       return {
         access_token: accessToken,
         refresh_token: refreshToken,
@@ -153,4 +173,27 @@ export class AuthService {
   resetPassword(payload: any, token: string) {
     throw new BadRequestException('Password reset not implemented yet');
   }
+
+  async saveUserSession(
+    $userId: string,
+    refreshToken: string,
+    userAgent: string,
+    ipAddress: string,
+    expiresAt: Date,
+  ) {
+    const session = this.sessionRepository.create({
+      userId: $userId,
+      refreshToken,
+      userAgent,
+      ipAddress,
+      expiresAt,
+    });
+    await this.sessionRepository.save(session);
+  }
+
+  async userSessions(userId: string) {
+   const sessions = await this.sessionRepository.find({ where: { userId } });
+   return sessions;
+  }
+  
 }

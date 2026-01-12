@@ -14,9 +14,11 @@ import {
   OTPDto,
   ResetPasswordDto,
 } from './dto/create-auth.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { Public } from '@/decorators';
+import { CurrentUser, Public } from '@/decorators';
+import express from 'express';
+import * as types from '@/types';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -25,8 +27,8 @@ export class AuthController {
 
   @Public()
   @Post('/login')
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  login(@Body() createAuthDto: CreateAuthDto, @Req() req: express.Request) {
+    return this.authService.create(createAuthDto, req);
   }
   @Public()
   @Post('/refresh-token')
@@ -43,7 +45,7 @@ export class AuthController {
   @Public()
   @Get('/google/callback')
   @UseGuards(AuthGuard('google'))
-  googleCallback(@Req() req: Request) {
+  googleCallback(@Req() req: express.Request) {
     return this.authService.googleLogin(req);
   }
   @Public()
@@ -56,6 +58,7 @@ export class AuthController {
   verifyOtp(@Param('token') token: string, @Body() forgetPasswordDto: OTPDto) {
     return this.authService.verifyOtp(forgetPasswordDto, token);
   }
+
   @Public()
   @Post('/reset-password/:token')
   resetPassword(
@@ -63,5 +66,11 @@ export class AuthController {
     @Body() resetPasswordDto: ResetPasswordDto,
   ) {
     return this.authService.resetPassword(resetPasswordDto, token);
+  }
+
+  @Get('/sessions')
+  @ApiBearerAuth()
+  userSessions(@CurrentUser() currentUser: types.AuthenticatedUser) {
+    return this.authService.userSessions(currentUser.id);
   }
 }

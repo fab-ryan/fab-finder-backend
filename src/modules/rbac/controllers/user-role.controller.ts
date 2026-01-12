@@ -8,17 +8,17 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RbacService } from '../services/rbac.service';
-import { RbacGuard } from '../../../guards/rbac.guard';
-import { RequirePermissions } from '../../../decorators/rbac.decorator';
+import { PermissionGuard } from '../../../guards/permission.guard';
+import { DynamicRead } from '../../../decorators/permission.decorator';
 
 @ApiTags('User Roles')
 @Controller('users')
-@UseGuards(RbacGuard)
+@UseGuards(PermissionGuard)
 export class UserRoleController {
   constructor(private readonly rbacService: RbacService) {}
 
   @Get(':userId/roles')
-  @RequirePermissions('users:read')
+  @DynamicRead('users', ['admin'])
   @ApiOperation({ summary: 'Get user roles' })
   @ApiResponse({
     status: 200,
@@ -34,7 +34,7 @@ export class UserRoleController {
   }
 
   @Get(':userId/permissions')
-  @RequirePermissions('users:read')
+  @DynamicRead('users', ['admin'])
   @ApiOperation({ summary: 'Get user permissions' })
   @ApiResponse({
     status: 200,
@@ -50,7 +50,7 @@ export class UserRoleController {
   }
 
   @Post(':userId/check-permission/:resource/:action')
-  @RequirePermissions('users:read')
+  @DynamicRead('users', ['admin'])
   @ApiOperation({ summary: 'Check if user has specific permission' })
   @ApiResponse({ status: 200, description: 'Permission check completed' })
   async checkUserPermission(
@@ -71,7 +71,7 @@ export class UserRoleController {
   }
 
   @Post(':userId/check-role/:roleName')
-  @RequirePermissions('users:read')
+  @DynamicRead('users', ['admin'])
   @ApiOperation({ summary: 'Check if user has specific role' })
   @ApiResponse({ status: 200, description: 'Role check completed' })
   async checkUserRole(

@@ -9,7 +9,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { UserRole } from '@/modules/rbac/entities/user-role.entity';
-import { AuthProvider } from '@/enums';
+import { Session } from './session.entity';
 
 export enum UserStatus {
   ACTIVE = 'active',
@@ -30,6 +30,10 @@ export class User {
 
   @Column({ unique: true })
   username: string;
+  @Column({ nullable: true })
+  firstName: string;
+  @Column({ nullable: true })
+  lastName: string;
 
   @Column()
   password: string;
@@ -56,8 +60,7 @@ export class User {
   @Column({ nullable: true })
   bannedBy: string;
 
-  @Column({ default: AuthProvider.LOCAL, type: 'enum', enum: AuthProvider })
-  provider: AuthProvider;
+ 
 
   @Column({ nullable: true })
   profilePicture: string;
@@ -75,6 +78,9 @@ export class User {
     cascade: true,
   })
   userRoles: UserRole[];
+
+  @OneToMany(() => Session, (session) => session.user)
+  sessions: Session[];
 
   get isActive(): boolean {
     return this.status === UserStatus.ACTIVE;

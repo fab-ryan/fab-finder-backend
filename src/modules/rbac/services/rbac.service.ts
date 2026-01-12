@@ -271,6 +271,30 @@ export class RbacService {
     return userRoles.some((userRole) => userRole.role.name === roleName);
   }
 
+  /**
+   * Check if a permission exists in the database
+   * Used for dynamic permission checking - if permission doesn't exist,
+   * the system falls back to role-based access
+   */
+  async permissionExists(resource: string, action: string): Promise<boolean> {
+    const permission = await this.permissionRepository.findOne({
+      where: { resource, action },
+    });
+    return !!permission;
+  }
+
+  /**
+   * Get permission by resource and action
+   */
+  async getPermissionByResourceAction(
+    resource: string,
+    action: string,
+  ): Promise<Permission | null> {
+    return await this.permissionRepository.findOne({
+      where: { resource, action },
+    });
+  }
+
   // Bulk operations for permissions
   async addPermissionsToRole(
     roleId: string,
