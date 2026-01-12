@@ -29,22 +29,22 @@ export interface PermissionOptions {
 }
 
 /**
- * Dynamic permission decorator that allows role-based access by default,
+ *  permission decorator that allows role-based access by default,
  * but restricts to specific permissions when they are defined in the database.
  *
  * @example
  * // Allow all authenticated users by default, restrict when 'user:update' permission exists
- * @DynamicPermission({ resource: 'user', action: 'update' })
+ * @Permission({ resource: 'user', action: 'update' })
  *
  * @example
  * // Only allow admin and manager by default, restrict when 'order:create' permission exists
- * @DynamicPermission({ resource: 'order', action: 'create', defaultRoles: ['admin', 'manager'] })
+ * @Permission({ resource: 'order', action: 'create', defaultRoles: ['admin', 'manager'] })
  *
  * @example
  * // Deny by default (require permission to exist)
- * @DynamicPermission({ resource: 'payment', action: 'refund', allowByDefault: false })
+ * @Permission({ resource: 'payment', action: 'refund', allowByDefault: false })
  */
-export const DynamicPermission = (options: PermissionOptions) => {
+export const CanPermission = (options: PermissionOptions) => {
   return applyDecorators(
     SetMetadata(PERMISSION_KEY, options),
     // Also set roles for fallback behavior
@@ -55,46 +55,46 @@ export const DynamicPermission = (options: PermissionOptions) => {
 };
 
 /**
- * Helper decorator for dynamic create permission
+ * Helper decorator for  create permission
  * @param resource - The resource name
  * @param defaultRoles - Roles that can access by default
  */
-export const DynamicCreate = (resource: string, defaultRoles: string[] = []) =>
-  DynamicPermission({ resource, action: 'create', defaultRoles });
+export const CanCreate = (resource: string, defaultRoles: string[] = []) =>
+  CanPermission({ resource, action: 'create', defaultRoles });
 
 /**
- * Helper decorator for dynamic read permission
+ * Helper decorator for  read permission
  * @param resource - The resource name
  * @param defaultRoles - Roles that can access by default
  */
-export const DynamicRead = (resource: string, defaultRoles: string[] = []) =>
-  DynamicPermission({ resource, action: 'read', defaultRoles });
+export const CanRead = (resource: string, defaultRoles: string[] = []) =>
+  CanPermission({ resource, action: 'read', defaultRoles });
 
 /**
- * Helper decorator for dynamic update permission
+ * Helper decorator for  update permission
  * @param resource - The resource name
  * @param defaultRoles - Roles that can access by default
  */
-export const DynamicUpdate = (resource: string, defaultRoles: string[] = []) =>
-  DynamicPermission({ resource, action: 'update', defaultRoles });
+export const CanUpdate = (resource: string, defaultRoles: string[] = []) =>
+  CanPermission({ resource, action: 'update', defaultRoles });
 
 /**
- * Helper decorator for dynamic delete permission
+ * Helper decorator for  delete permission
  * @param resource - The resource name
  * @param defaultRoles - Roles that can access by default
  */
-export const DynamicDelete = (resource: string, defaultRoles: string[] = []) =>
-  DynamicPermission({ resource, action: 'delete', defaultRoles });
+export const CanDelete = (resource: string, defaultRoles: string[] = []) =>
+  CanPermission({ resource, action: 'delete', defaultRoles });
 
 /**
- * Helper decorator for dynamic manage (all CRUD) permissions
+ * Helper decorator for  manage (all CRUD) permissions
  * NOTE: This applies the same defaultRoles to all actions.
- * For fine-grained control, use individual DynamicCreate, DynamicRead, etc.
+ * For fine-grained control, use individual Create, Read, etc.
  * @param resource - The resource name
  * @param defaultRoles - Roles that can access by default
  */
-export const DynamicManage = (resource: string, defaultRoles: string[] = []) =>
-  DynamicPermission({
+export const CanManage = (resource: string, defaultRoles: string[] = []) =>
+  CanPermission({
     resource,
     action: 'manage',
     defaultRoles,

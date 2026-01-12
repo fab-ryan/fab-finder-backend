@@ -28,7 +28,7 @@ export class AuthService {
     private readonly sessionRepository: Repository<Session>,
   ) {}
 
-  async create(createAuthDto: CreateAuthDto, req:Request) {
+  async create(createAuthDto: CreateAuthDto, req: Request) {
     try {
       const { username, password } = createAuthDto;
 
@@ -92,7 +92,7 @@ export class AuthService {
         { sub: user.id },
         { expiresIn: '7d' },
       );
-     
+
       return {
         access_token: newAccessToken,
         refresh_token: newRefreshToken,
@@ -192,8 +192,7 @@ export class AuthService {
   }
 
   async userSessions(userId: string) {
-   const sessions = await this.sessionRepository.find({ where: { userId } });
-   return sessions;
+    const sessions = await this.sessionRepository.find({ where: { userId } });
+    return sessions;
   }
-  
 }

@@ -100,7 +100,7 @@ export class PermissionGuard implements CanActivate {
 
       if (!userHasRole) {
         throw new ForbiddenException(
-          `Access denied. Required roles: ${requiredRoles.join(', ')}`,
+          `Access denied.`,
         );
       }
     }
