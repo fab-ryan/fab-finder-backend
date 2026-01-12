@@ -42,4 +42,10 @@ class ResetPasswordDto {
   @ApiProperty({ example: 'password' })
   confirmPassword: string;
 }
-export { ForgetPasswordDto, OTPDto, ResetPasswordDto };
+class RefreshTokenDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: 'refresh token' })
+  token: string;
+}
+export { ForgetPasswordDto, OTPDto, ResetPasswordDto, RefreshTokenDto };

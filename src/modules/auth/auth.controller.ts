@@ -12,6 +12,7 @@ import {
   CreateAuthDto,
   ForgetPasswordDto,
   OTPDto,
+  RefreshTokenDto,
   ResetPasswordDto,
 } from './dto/create-auth.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -32,8 +33,8 @@ export class AuthController {
   }
   @Public()
   @Post('/refresh-token')
-  refreshToken(@Body('token') token: string) {
-    return this.authService.renewToken(token);
+  refreshToken(@Body() token: RefreshTokenDto) {
+    return this.authService.renewToken(token.token);
   }
 
   @Public()

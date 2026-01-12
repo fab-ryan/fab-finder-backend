@@ -18,7 +18,7 @@ import { RbacService } from '../services/rbac.service';
 import { CreatePermissionDto, UpdatePermissionDto } from '../dto';
 import { PermissionGuard } from '../../../guards/permission.guard';
 import { AdminOnly } from '../../../decorators/roles.decorator';
-import { DynamicRead } from '../../../decorators/permission.decorator';
+import { CanRead } from '../../../decorators/permission.decorator';
 
 @ApiTags('Permissions')
 @Controller('permissions')
@@ -46,7 +46,7 @@ export class PermissionController {
   }
 
   @Get()
-  @DynamicRead('permissions', ['admin'])
+  @CanRead('permissions', ['admin'])
   @ApiOperation({ summary: 'Get all permissions' })
   @ApiResponse({
     status: 200,
@@ -62,7 +62,7 @@ export class PermissionController {
   }
 
   @Get(':id')
-  @DynamicRead('permissions', ['admin'])
+  @CanRead('permissions', ['admin'])
   @ApiOperation({ summary: 'Get permission by ID' })
   @ApiResponse({
     status: 200,
